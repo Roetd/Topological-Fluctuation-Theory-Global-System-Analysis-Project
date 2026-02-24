@@ -1,0 +1,85 @@
+# 默认配置文件
+# 拓扑波动理论全球系统分析项目
+
+# 系统配置
+system:
+  # 演化模拟参数
+  evolution:
+    total_steps: 50      # 演化总步数
+    damping: 0.1         # 系统阻尼系数
+    step_size: 0.1       # 时间步长
+  
+  # 拓扑配置
+  topology:
+    default_adjacency_type: "fully_connected"  # 默认邻接矩阵类型
+    center_weight: 0.7    # 中心节点权重
+  
+  # 诊断配置
+  diagnosis:
+    stability_tolerance: 1e-3  # 稳定性容忍度
+    chain_tolerance: 1e-6      # 拓扑闭链公理容忍度
+
+# 节点配置
+nodes:
+  # 默认节点参数范围
+  default_ranges:
+    survival_metric: [0.6, 0.9]
+    security_metric: [0.6, 0.9]
+    linear_metric: [0.6, 0.8]
+    performance_metric: [0.6, 0.85]
+    hard_power_weight: [0.4, 0.7]
+    soft_power_weight: [0.3, 0.6]
+  
+  # 核心节点列表
+  core_nodes:
+    - US
+    - CN
+    - EU
+    - JP
+    - BRICS
+    - ASEAN
+    - AFRICA
+    - LATAM
+    - OPEC
+    - OTHERS
+
+# 可视化配置
+visualization:
+  # 图表配置
+  charts:
+    figsize: [12, 7]       # 图表大小
+    dpi: 300               # 图表分辨率
+    fontsize: 12           # 字体大小
+    colors:
+      trump_path: "#ff4444"
+      multilateral_path: "#ffbb33"
+      symbiosis_path: "#00C851"
+  
+  # 保存配置
+  save:
+    format: "png"          # 保存格式
+    directory: "output"    # 保存目录
+
+# 路径配置
+paths:
+  # 数据路径
+  data:
+    input: "data/input"
+    output: "data/output"
+    config: "data/config"
+  
+  # 默认文件
+  default:
+    nodes_file: "default_nodes.csv"
+    config_file: "default_config.yaml"
+
+# 日志配置
+logging:
+  level: "INFO"            # 日志级别
+  format: "%(asctime)s - %(levelname)s - %(message)s"
+  
+# 版本信息
+version:
+  project: "TFT-Practice-Project"
+  version: "1.0"
+  description: "拓扑波动理论全球系统分析项目"

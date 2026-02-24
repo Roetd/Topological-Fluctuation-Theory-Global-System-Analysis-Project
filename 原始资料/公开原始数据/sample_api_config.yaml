@@ -1,0 +1,129 @@
+# 示例API配置文件
+# 用于从公开API获取实时数据
+
+# API基础配置
+base:
+  timeout: 30          # API请求超时时间（秒）
+  retry_attempts: 3    # 请求失败重试次数
+  retry_delay: 1       # 重试间隔（秒）
+
+# API端点配置
+endpoints:
+  # 世界银行API
+  world_bank:
+    base_url: "https://api.worldbank.org/v2"
+    indicators:
+      gdp: "NY.GDP.MKTP.CD"           # GDP (current US$)
+      gdp_growth: "NY.GDP.MKTP.KD.ZG"  # GDP growth (annual %)
+      population: "SP.POP.TOTL"         # Population, total
+      unemployment: "SL.UEM.TOTL.ZS"   # Unemployment, total (% of labor force)
+    format: "json"
+    page: 1
+    per_page: 1000
+
+  # REST Countries API
+  rest_countries:
+    base_url: "https://restcountries.com/v3.1"
+    endpoints:
+      all: "/all"
+      name: "/name/{name}"
+      code: "/alpha/{code}"
+    params:
+      fields: "name,population,area,capital,region,subregion"
+
+  # OpenWeatherMap API
+  open_weather:
+    base_url: "https://api.openweathermap.org/data/2.5"
+    endpoints:
+      weather: "/weather"
+      forecast: "/forecast"
+    params:
+      units: "metric"
+      lang: "zh_cn"
+    # 注意：使用时需要替换为实际的API密钥
+    api_key: "YOUR_API_KEY"
+
+  # COVID-19 Data API
+  covid19:
+    base_url: "https://disease.sh/v3"
+    endpoints:
+      global: "/covid-19/all"
+      countries: "/covid-19/countries"
+      historical: "/covid-19/historical"
+
+# 数据处理配置
+data_processing:
+  # 数据转换规则
+  transformations:
+    gdp:
+      type: "currency"
+      unit: "USD"
+      format: "number"
+    gdp_growth:
+      type: "percentage"
+      format: "float"
+    population:
+      type: "number"
+      format: "integer"
+    unemployment:
+      type: "percentage"
+      format: "float"
+
+  # 数据映射规则
+  mappings:
+    # 将API数据映射到拓扑波动理论的指标
+    survival_metric:
+      - source: "world_bank"
+        indicator: "SP.POP.TOTL"
+        weight: 0.2
+      - source: "world_bank"
+        indicator: "NY.GDP.MKTP.CD"
+        weight: 0.3
+      - source: "open_weather"
+        indicator: "weather"
+        weight: 0.1
+      - source: "covid19"
+        indicator: "global"
+        weight: 0.4
+    
+    security_metric:
+      - source: "world_bank"
+        indicator: "SL.UEM.TOTL.ZS"
+        weight: 0.3
+      - source: "covid19"
+        indicator: "countries"
+        weight: 0.7
+    
+    linear_metric:
+      - source: "world_bank"
+        indicator: "NY.GDP.MKTP.KD.ZG"
+        weight: 0.8
+      - source: "rest_countries"
+        indicator: "population"
+        weight: 0.2
+    
+    performance_metric:
+      - source: "world_bank"
+        indicator: "NY.GDP.MKTP.CD"
+        weight: 0.5
+      - source: "world_bank"
+        indicator: "NY.GDP.MKTP.KD.ZG"
+        weight: 0.5
+
+# 缓存配置
+cache:
+  enabled: true        # 是否启用缓存
+  directory: "cache"   # 缓存目录
+  expiration: 86400    # 缓存过期时间（秒），默认1天
+
+# 日志配置
+logging:
+  enabled: true        # 是否启用日志
+  level: "INFO"        # 日志级别
+  file: "api_requests.log"  # 日志文件
+
+# 注意事项
+# 1. 使用本配置文件前，请确保已安装必要的Python包：requests, pyyaml
+# 2. 部分API可能需要注册并获取API密钥
+# 3. 请合理使用API，避免过度请求导致被封禁
+# 4. 请遵守各API的使用条款和限制
